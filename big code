@@ -1,0 +1,32 @@
+<a href="/uploads"><button>View Uploads</button></a>
+<div class="box">
+    <h1>Welcome to My Python Website</h1>
+    <a href="/about"><button>About</button></a>
+    <a href="/video"><button>Video</button></a>
+    <a href="/upload"><button>Upload</button></a>
+    <a href="/uploads"><button>View Uploads</button></a>  <!-- View uploads button -->
+</div>
+from flask import send_from_directory
+
+# Page to list all uploaded files
+@app.route("/uploads")
+def list_uploads():
+    files = os.listdir("uploads")
+    file_links = ""
+    for f in files:
+        file_links += f"<li><a href='/uploads/{f}'>{f}</a></li>"
+    return f"""
+    <h1>Uploaded Files</h1>
+    <ul>
+        {file_links if file_links else '<li>No files uploaded yet.</li>'}
+    </ul>
+    <a href='/'><button>Back</button></a>
+    """
+
+# Route to serve the uploaded files
+@app.route("/uploads/<filename>")
+def uploaded_file(filename):
+    return send_from_directory("uploads", filename)
+if not os.path.exists("uploads"):
+    os.makedirs("uploads")
+
