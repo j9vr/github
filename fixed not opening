@@ -1,0 +1,20 @@
+from flask import send_from_directory
+
+@app.route("/uploads")
+def list_uploads():
+    files = os.listdir("uploads")
+    file_links = ""
+    for f in files:
+        file_links += f"<li><a href='/uploads/{f}'>{f}</a></li>"
+    return f"""
+    <h1>Uploaded Files</h1>
+    <ul>
+        {file_links if file_links else '<li>No files uploaded yet.</li>'}
+    </ul>
+    <a href='/'><button>Back</button></a>
+    """
+
+# Serve the actual uploaded files
+@app.route("/uploads/<filename>")
+def uploaded_file(filename):
+    return send_from_directory("uploads", filename)
