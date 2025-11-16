@@ -1,0 +1,3 @@
+@app.route("/video")
+def video():
+    return video_html
