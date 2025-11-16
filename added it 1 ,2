@@ -1,0 +1,22 @@
+import os
+from flask import request
+
+if not os.path.exists("uploads"):
+    os.makedirs("uploads")
+
+@app.route("/upload", methods=["GET", "POST"])
+def upload():
+    if request.method == "POST":
+        file = request.files["file"]
+        if file:
+            file.save(os.path.join("uploads", file.filename))
+            return "<h1>Upload Successful!</h1><a href='/'>Back</a>"
+    return """
+    <h1>Upload a File</h1>
+    <form method='POST' enctype='multipart/form-data'>
+        <input type='file' name='file'>
+        <button type='submit'>Upload</button>
+    </form>
+    <br>
+    <a href='/'><button>Back</button></a>
+    """
