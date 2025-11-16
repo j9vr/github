@@ -1,0 +1,168 @@
+import os
+from flask import Flask, request
+
+app = Flask(__name__)
+
+# Make uploads folder
+if not os.path.exists("uploads"):
+    os.makedirs("uploads")
+
+# ---------- HTML PAGES ----------
+home_html = """
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Python Web</title>
+    <style>
+        body { font-family: Arial; background: #111; color: white; text-align: center; }
+        a { color: #00ff88; font-size: 20px; text-decoration: none; margin: 10px; display: inline-block; }
+        button {
+            background: #00ff88;
+            border: none;
+            padding: 12px 25px;
+            font-size: 18px;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        button:hover { background: #00cc66; }
+        .box { margin-top: 100px; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h1>Welcome to My Python Website</h1>
+        <a href="/about"><button>About</button></a>
+        <a href="/video"><button>Video</button></a>
+        <a href="/upload"><button>Upload</button></a> <!-- Upload button -->
+    </div>
+</body>
+</html>
+"""
+
+about_html = """
+<!DOCTYPE html>
+<html>
+<head>
+    <title>About</title>
+    <style>
+        body { font-family: Arial; background: #222; color: white; text-align: center; }
+        a { color: #00ff88; font-size: 20px; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <h1>About This Web</h1>
+    <p>This web was created using Flask in one Python file.</p>
+    <a href="/">Go Back</a>
+</body>
+</html>
+"""
+
+video_html = """
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Video Page</title>
+    <style>
+        body { font-family: Arial; background: #000; color: white; text-align: center; }
+        a { color: #00ff88; }
+        iframe { border-radius: 12px; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Video Example</h1>
+    <p>You can embed videos here.</p>
+
+    <iframe width="560" height="315"
+        src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+        allowfullscreen>
+    </iframe>
+
+    <br><br>
+    <a href="/">Go Back</a>
+</body>
+</html>
+"""
+
+upload_html = """
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload File</title>
+    <style>
+        body { font-family: Arial; background: #111; color: white; text-align: center; }
+        input[type=file] { margin-top: 30px; font-size: 18px; color: white; }
+        button {
+            background: #00ff88;
+            border: none;
+            padding: 10px 20px;
+            font-size: 18px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        button:hover { background: #00cc66; }
+    </style>
+</head>
+<body>
+    <h1>Upload a File</h1>
+    <form method="POST" enctype="multipart/form-data">
+        <input type="file" name="file"><br><br>
+        <button type="submit">Upload</button>
+    </form>
+    <br>
+    <a href="/"><button>Back</button></a>
+</body>
+</html>
+"""
+
+upload_done_html = """
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Uploaded</title>
+    <style>
+        body { background: #111; color: white; text-align: center; font-family: Arial; }
+        button {
+            background: #00ff88;
+            border: none;
+            padding: 10px 20px;
+            font-size: 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        button:hover { background: #00cc66; }
+    </style>
+</head>
+<body>
+    <h1>Upload Successful!</h1>
+    <p>Your file has been uploaded.</p>
+    <a href="/"><button>Go Home</button></a>
+</body>
+</html>
+"""
+
+# ---------- ROUTES ----------
+@app.route("/")
+def home():
+    return home_html
+
+@app.route("/about")
+def about():
+    return about_html
+
+@app.route("/video")
+def video():
+    return video_html
+
+@app.route("/upload", methods=["GET", "POST"])
+def upload():
+    if request.method == "POST":
+        file = request.files["file"]
+        if file:
+            file.save(os.path.join("uploads", file.filename))
+            return upload_done_html
+    return upload_html
+
+# ---------- RUN APP ----------
+if __name__ == "__main__":
+    app.run(debug=True)
