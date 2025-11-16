@@ -1,0 +1,116 @@
+import os
+from flask import Flask, request, send_from_directory
+
+app = Flask(__name__)
+UPLOAD_FOLDER = "uploads"
+
+# Create uploads folder if it doesn't exist
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
+
+# HTML Pages
+home_html = """
+<!DOCTYPE html>
+<html>
+<head>
+<title>Home</title>
+<style>body{background:#111;color:white;text-align:center;font-family:Arial;}button{padding:12px 25px;font-size:18px;margin:10px;border-radius:10px;background:#00ff88;border:none;cursor:pointer;}button:hover{background:#00cc66;}a{color:white;text-decoration:none;}</style>
+</head>
+<body>
+<h1>Welcome</h1>
+<a href="/about"><button>About</button></a>
+<a href="/video"><button>Video</button></a>
+<a href="/upload"><button>Upload</button></a>
+<a href="/uploads"><button>View Uploads</button></a>
+</body>
+</html>
+"""
+
+about_html = """
+<!DOCTYPE html>
+<html>
+<head><title>About</title></head>
+<body style='background:#222;color:white;text-align:center;font-family:Arial;'>
+<h1>About This Web</h1>
+<p>Created with Flask in one Python file.</p>
+<a href='/'><button>Go Back</button></a>
+</body>
+</html>
+"""
+
+video_html = """
+<!DOCTYPE html>
+<html>
+<head><title>Video</title></head>
+<body style='background:#000;color:white;text-align:center;font-family:Arial;'>
+<h1>Video Example</h1>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/dQw4w9WgXcQ" allowfullscreen></iframe>
+<br><br><a href='/'><button>Go Back</button></a>
+</body>
+</html>
+"""
+
+upload_html = """
+<!DOCTYPE html>
+<html>
+<head><title>Upload File</title></head>
+<body style='background:#111;color:white;text-align:center;font-family:Arial;'>
+<h1>Upload a File</h1>
+<form method="POST" enctype="multipart/form-data">
+<input type="file" name="file" required><br><br>
+<button type="submit">Upload</button>
+</form>
+<br>
+<a href="/"><button>Back</button></a>
+</body>
+</html>
+"""
+
+upload_done_html = """
+<!DOCTYPE html>
+<html>
+<head><title>Uploaded</title></head>
+<body style='background:#111;color:white;text-align:center;font-family:Arial;'>
+<h1>Upload Successful!</h1>
+<p>Your file has been uploaded.</p>
+<a href="/"><button>Go Home</button></a>
+</body>
+</html>
+"""
+
+# Routes
+@app.route("/")
+def home():
+    return home_html
+
+@app.route("/about")
+def about():
+    return about_html
+
+@app.route("/video")
+def video():
+    return video_html
+
+@app.route("/upload", methods=["GET","POST"])
+def upload():
+    if request.method=="POST":
+        file=request.files["file"]
+        if file:
+            file.save(os.path.join(UPLOAD_FOLDER,file.filename))
+            return upload_done_html
+    return upload_html
+
+@app.route("/uploads")
+def list_uploads():
+    files=os.listdir(UPLOAD_FOLDER)
+    file_links=""
+    for f in files:
+        file_links+=f"<li><a href='/uploads/{f}'>{f}</a></li>"
+    return f"<h1>Uploaded Files</h1><ul>{file_links if file_links else '<li>No files uploaded yet.</li>'}</ul><a href='/'><button>Back</button></a>"
+
+@app.route("/uploads/<filename>")
+def uploaded_file(filename):
+    return send_from_directory(UPLOAD_FOLDER,filename)
+
+if __name__=="__main__":
+    app.run(debug=True)
