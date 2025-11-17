@@ -1,0 +1,15 @@
+using Sandbox;
+
+public sealed class HealTriggerComponent : Component,componet.IItriggerlistener 
+{
+	protected override void OnUpdate()
+	{
+		public void ontriggerenter( collidor other );
+	}
+log.info(other)
+	public void ontriggerexit(collidor other)
+{
+
+}
+log.info( other );
+}
